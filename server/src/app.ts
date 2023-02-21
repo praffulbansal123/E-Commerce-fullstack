@@ -7,10 +7,12 @@ import createError from 'http-errors'
 import morgan from 'morgan';
 import MongoStore from 'connect-mongo';
 import Database from './database/db';
+import userRouter from './routes/userRoute';
 import productRouter from './routes/productRoute';
 import Locals from './config/config';
 import multer from 'multer';
 import logger from './logger/logger';
+import cookieParser from 'cookie-parser'
 
 // dotenv configuration
 dotenv.config()
@@ -48,10 +50,14 @@ app.use(session({
 // Parsing middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(multer().any());
 
 // Database initialized
 Database.init();
+
+// diverting user request to user router
+app.use("/api/user", userRouter);
 
 // diverting product request to product router
 app.use("/api/product", productRouter);
@@ -64,13 +70,19 @@ app.use((req:Request, res:Response, next:NextFunction) => {
 // Intializing error-handling
 app.use((err:any, req:Request, res:Response, next:NextFunction) => {
 
+    // Wrong Mongo ID Error
     if(err.name === "CastError") {
         err.status = 400;
         err.message =`Resource not found. Inavlid: ${err.path}`
     }
 
+    // Validation Error
+    if(err.name === "ValidationError") {
+        err.status = 400;
+    }
+
     res.status(err.status || 500);
-    res.send({statusCode: err.status || 500, status: false, message: err.message})
+    res.send({statusCode: err.status || 500, status: false, message: err.message});
 });
 
 // Unhandled Promise Rejections

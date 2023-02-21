@@ -6,11 +6,11 @@ export const productSchema:Schema = new Schema({
     name: {type: String, required: [true, 'Please enter Product Name'], unique: true, trim: true},
     description: {type: String, required: [true, 'Please enter Product Description']},
     price: {type: Number, required: [true, 'Please enter Product Description'], maxLength: [8, 'Price can not exceed 8 characters']},
-    rating: {type: String, default: 0},
-    productImage: {
+    ratings: {type: String, default: 0},
+    productImage: [{
         public_id: {type: String, required: true},
         url: {type: String, required: true},
-    },
+    }],
     category: {type: String, required: [true, 'Please enter Product Category']},
     availableStock: {type: Number, required: [true, 'Please enter Product stock'], maxLength: [4, 'Stock can not exceed 4 characters'], default: 1},
     numOfReviews: {type: Number, default: 0},
@@ -30,7 +30,7 @@ productSchema.plugin(mongooseUniqueValidator, {message: 'already taken'});
 //     next()
 // })
 
-// creating model
+// Creating Product Model
 const Product = model<IProduct>('Product', productSchema);
 
 export default Product;
