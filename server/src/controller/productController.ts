@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import IProduct from '../interface/models/product';
 import logger from '../logger/logger';
 import {createProductService, getAllProductService, deleteProductService, updatePoductService} from '../services/productService'
-import { IqueryStr } from '../utils/apiFeatures';
+import { IQueryStr } from '../utils/apiFeatures';
 
 
 export const createProductHandler:RequestHandler = async (req:Request, res:Response, next:NextFunction) => {
@@ -27,7 +27,7 @@ export const createProductHandler:RequestHandler = async (req:Request, res:Respo
 export const getAllProductHandler:RequestHandler = async (req:Request, res:Response, next:NextFunction) => {
     try {
 
-        const requestBody:IqueryStr = req.query
+        const requestBody:IQueryStr = req.query
 
         const products:Array<IProduct> = await getAllProductService(requestBody)
 

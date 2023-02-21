@@ -1,27 +1,25 @@
-import IProduct from "../interface/models/product"
-
-export interface IqueryStr {
-    keyword?: string,
+export interface IQueryStr {
+    keyword?: string;
     price?: {
-        gt?: string,
-        gte?: string,
-        lt?: string,
-        lte?: string
+        gt?: string;
+        gte?: string;
+        lt?: string;
+        lte?: string;
     },
-    category?: string,
-    page?: string
+    page?: string;
+    category?: string
+    rating?: number
 }
 
 class ApiFeatures {
-    query: any
-    queryStr: IqueryStr
-
-    constructor(query:any, queryStr:IqueryStr) {
-        this.query = query,
-        this.queryStr = queryStr
+    query: any;
+    queryStr: IQueryStr
+    constructor(query: any, queryStr: IQueryStr)  {
+        this.query = query;
+        this.queryStr = queryStr;
     }
 
-    search() {
+    serach() {
         const keyword = this.queryStr.keyword ? {
             name: {
                 $regex: this.queryStr.keyword,
@@ -35,33 +33,33 @@ class ApiFeatures {
     }
 
     filter() {
-        //Deep clone of queryStr
-        const queryCopy:{[key: string]: any} = {...this.queryStr}
+        // Creating deep copy of queryStr
+        const queryStrCopy:{[key: string]: any} = {...this.queryStr}
 
-        // Removing some field for category
-        const removedFields = ["keyword", "price", "page"]
-
-        removedFields.forEach(field => delete queryCopy[field])
+        // Removing fields for category
+        const removedFields = ["keyword", "page"]
+        removedFields.forEach(field => delete queryStrCopy[field])
 
         // Filter for price and ratings
-        let queryStr = JSON.stringify(queryCopy)
+        let queryString = JSON.stringify(queryStrCopy)
+        queryString = queryString.replace(/\b(gt|gte|lt|lte)\b/g, key => `$${key}`)
 
-        queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, key => `$${key}`)
-
-        this.query = this.query.find(JSON.parse(queryStr))
+        this.query = this.query.find(JSON.parse(queryString))
 
         return this
     }
 
-    pagination(input: number){
+    pagination(input: number) {
         const currentPage: number = Number(this.queryStr.page) || 1
 
-        const noOfSkipProducts: number = input * (currentPage - 1)
+        const noOfProductsSkipped: number = input * (currentPage - 1)
 
-        this.query = this.query.limit(input).skip(noOfSkipProducts)
+        console.log(currentPage, noOfProductsSkipped)
+
+        this.query = this.query.limit(input).skip(noOfProductsSkipped)
 
         return this
     }
 }
 
-export default ApiFeatures
+export default ApiFeatures;

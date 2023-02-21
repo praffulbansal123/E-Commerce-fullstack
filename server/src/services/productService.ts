@@ -1,7 +1,7 @@
 import Product from '../models/productModel';
 import IProduct from "../interface/models/product"
 import createError from 'http-errors';
-import ApiFeatures, { IqueryStr } from '../utils/apiFeatures';
+import ApiFeatures, { IQueryStr } from '../utils/apiFeatures';
 
 
 export const createProductService = async (input:any):Promise<IProduct> => {
@@ -16,12 +16,12 @@ export const createProductService = async (input:any):Promise<IProduct> => {
     }
 }
 
-export const getAllProductService = async (input:IqueryStr):Promise<Array<IProduct>> => {
+export const getAllProductService = async (input:IQueryStr):Promise<Array<IProduct>> => {
     try {
 
-        const resultPerpage:  number = 5
+        const productsPerPage: number = 5
 
-        const apiFeatures = new ApiFeatures( Product.find(), input).search().filter().pagination(resultPerpage)
+        const apiFeatures = new ApiFeatures(Product.find(), input).serach().filter().pagination(productsPerPage)
 
         const products:Array<IProduct> = await apiFeatures.query
         
