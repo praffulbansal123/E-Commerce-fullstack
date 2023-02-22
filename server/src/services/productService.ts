@@ -2,10 +2,13 @@ import Product from '../models/productModel';
 import IProduct from "../interface/models/product"
 import createError from 'http-errors';
 import ApiFeatures, { IQueryStr } from '../utils/apiFeatures';
+import { Types } from 'mongoose';
 
 
-export const createProductService = async (input:any):Promise<IProduct> => {
+export const createProductService = async (input:any, creatorId: Types.ObjectId):Promise<IProduct> => {
     try {
+        // Adding createdBy field to product
+        input.createdBy = creatorId
 
         // Creating product
         const product:IProduct = await Product.create(input)

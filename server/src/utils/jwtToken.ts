@@ -6,9 +6,8 @@ const sendToken = (user: IUserModel, statusCode: number, res: Response) => {
     const token: string = user.getJWTToken()
 
     // Options for cookie
-    console.log(Locals.config().cookieExpiry)
     const options = {
-        expires: new Date(Date.now() + Locals.config().cookieExpiry),
+        expires: new Date(Date.now() + Locals.config().cookieExpiry * 24 * 60 * 60 * 1000),
         httpOnly: true
     }
 

@@ -19,4 +19,5 @@ export interface IUser {
 export interface IUserModel extends IUser, Document  {
     getJWTToken(): string,
     comparePassword(input: string): Promise<boolean>
+    generateResetToken() : string
 }

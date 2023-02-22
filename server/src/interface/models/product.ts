@@ -1,4 +1,4 @@
-import { Document } from 'mongoose'
+import { Document, Types } from 'mongoose'
 
 interface productImage {
     public_id: string
@@ -17,6 +17,7 @@ export default interface IProduct extends Document{
     price: number,
     rating: number,
     productImage: Array<productImage>,
+    createdBy: Types.ObjectId
     category: string,
     availableStock: number,
     numOfReviews: number,

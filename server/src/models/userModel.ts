@@ -5,6 +5,7 @@ import {IUserModel} from "../interface/models/user";
 import bcrypt from 'bcrypt';
 import Locals from "../config/config";
 import jwt, { JwtPayload } from 'jsonwebtoken'
+import crypto from 'crypto';
 
 export const userSchema:Schema = new Schema({
     name: {
@@ -77,6 +78,19 @@ userSchema.methods.getJWTToken = function () {
 userSchema.methods.comparePassword = async function (requestedPassword: string): Promise<boolean> {
     const user = this as IUserModel;
     return await bcrypt.compare(requestedPassword, user.password)
+}
+
+// Generating Password reset token
+userSchema.methods.generateResetToken = function () {
+
+    // Generating Token
+    const resetToken = crypto.randomBytes(20).toString("hex");
+
+    // Hashing and adding it to UserSchema
+    this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex")
+    this.resetPasswordExpire = Date.now() + 15*60*1000
+
+    return resetToken;
 }
 
 // Creating User Model

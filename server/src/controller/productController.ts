@@ -1,17 +1,22 @@
 import { Request, Response, NextFunction, RequestHandler} from 'express';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import IProduct from '../interface/models/product';
 import logger from '../logger/logger';
+import { IRequest } from '../middleware/auth';
 import {createProductService, getAllProductService, deleteProductService, updatePoductService} from '../services/productService'
 import { IQueryStr } from '../utils/apiFeatures';
 
 
-export const createProductHandler:RequestHandler = async (req:Request, res:Response, next:NextFunction) => {
+export const createProductHandler:RequestHandler = async (req: IRequest, res:Response, next:NextFunction) => {
     try {
         
         const requestBody = req.body
 
-        const product:IProduct = await createProductService(requestBody)
+        console.log(req.user)
+
+        const creatorId: Types.ObjectId = req.user ? req.user.id : undefined
+
+        const product:IProduct = await createProductService(requestBody, creatorId)
 
         return res.status(201).send({status: true, message: 'Product created successfully', data: product})
 

@@ -9,6 +9,12 @@ router.post('/register', UserController.registerUserHandler)
 // Login user route
 router.post('/login', UserController.loginHandler)
 
+// Forgot password route
+router.post('/password/forgot', UserController.forgetPasswordHandler)
+
+// Reset password route
+router.put('/password/reset/:token', UserController.resetPasswordHandler)
+
 // Log out user route
 router.get('/logout', UserController.logoutHandler)
 
