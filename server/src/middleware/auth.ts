@@ -14,8 +14,6 @@ export const isAuthenticated = async (req: IRequest, res: Response, next: NextFu
     try {
         const token = req.cookies['token']
 
-        console.log(token)
-
         if(!token)
             throw new createError.Unauthorized("Token is required...please login first.");
 

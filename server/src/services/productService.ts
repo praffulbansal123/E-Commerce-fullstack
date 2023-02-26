@@ -1,5 +1,5 @@
 import Product from '../models/productModel';
-import IProduct from "../interface/models/product"
+import IProduct, { IDeleteReview, IReview } from "../interface/models/product"
 import createError from 'http-errors';
 import ApiFeatures, { IQueryStr } from '../utils/apiFeatures';
 import { Types } from 'mongoose';
@@ -66,6 +66,99 @@ export const deleteProductService = async (input: string): Promise<boolean> => {
 
 
     } catch (error : any) {
+        throw error
+    }
+}
+
+export const createProductReviewService = async(productId: string, reviewData: IReview): Promise<void> => {
+    try {
+        const product: IProduct|null = await Product.findById(productId)
+
+        if(!product)
+            throw new createError.NotFound(`Product with Id: ${productId} does not exits.`)
+
+        const isReviewed = product.reviews.find(rev => rev.user.toString() === reviewData.user.toString())
+
+        if(isReviewed) {
+            product.reviews.forEach(rev => {
+                if(rev.user.toString() === reviewData.user.toString()){
+                    rev.rating = reviewData.rating
+                    rev.comment = reviewData.comment
+                }
+            })
+        } else {
+            product.reviews.push(reviewData)
+            product.numOfReviews = product.reviews.length
+        }
+
+        const sum = product.reviews.reduce((acc, rev) => {
+            acc+=rev.rating
+            return acc
+        }, 0 as number)
+
+        product.ratings = sum / product.reviews.length
+
+        await product.save({validateBeforeSave: false})
+
+    } catch (error: any) {
+        throw error
+    }
+}
+
+export const getAllReviewByProductIdService = async (productId: string) : Promise<IReview[]> => {
+    try {
+        const product: IProduct|null = await Product.findById(productId)
+        
+        if(!product)
+            throw new createError.NotFound(`Product with Id: ${productId} does not exits.`)
+
+        const allReviews: IReview[] = product.reviews
+
+        return allReviews
+
+    } catch (error: any) {
+        throw error
+    }
+}
+
+export const deleteReviewService = async (productId: string, reviewId: string, userRole: string|undefined, userId: Types.ObjectId) : Promise<void> => {
+    try {
+        const product: IProduct|null = await Product.findById(productId)
+
+        if(!product)
+            throw new createError.NotFound(`Product with Id: ${productId} does not exits.`)
+
+        let reviews: IDeleteReview[]
+        if(userRole === 'admin'){
+            reviews = product.reviews.filter(r => r._id!.toString() !== reviewId.toString())
+        } else {
+            const review = product.reviews.find(r => r._id!.toString() === reviewId.toString())
+            console.log(review, userId)
+            if(review && review.user.toString() === userId.toString()){
+                reviews = product.reviews.filter(r => r._id!.toString() !== reviewId.toString())
+            } else {
+                throw new createError.Unauthorized(`User is not authorized to delete this review`)
+            }
+        }
+        
+        const sum = reviews.reduce((acc, rev) => {
+            acc+=rev.rating
+            return acc
+        }, 0 as number)
+        
+        const numOfReviews: number = reviews.length
+
+        let ratings: number
+        if(!sum){
+            ratings = 0
+        } else {
+            ratings = sum / numOfReviews
+        }
+        
+
+        await Product.findByIdAndUpdate(productId, {reviews, ratings, numOfReviews}, {new: true, runValidators: true, useFindAndModify: true})
+
+    } catch (error: any) {
         throw error
     }
 }

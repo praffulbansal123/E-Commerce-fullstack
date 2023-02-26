@@ -5,6 +5,13 @@ interface image {
     url: string
 }
 
+export interface INewUserDetails {
+    name?: string,
+    email?: string,
+    phone?: string,
+    role?: string
+}
+
 export interface IUser {
     name: string,
     email: string,

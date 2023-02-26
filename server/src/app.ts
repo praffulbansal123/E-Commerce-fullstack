@@ -57,10 +57,10 @@ app.use(multer().any());
 Database.init();
 
 // diverting user request to user router
-app.use("/api/user", userRouter);
+app.use("/api/v1", userRouter);
 
 // diverting product request to product router
-app.use("/api/product", productRouter);
+app.use("/api/v1", productRouter);
 
 // checking invalid route
 app.use((req:Request, res:Response, next:NextFunction) => {

@@ -6,7 +6,7 @@ export const productSchema:Schema = new Schema({
     name: {type: String, required: [true, 'Please enter Product Name'], unique: true, trim: true},
     description: {type: String, required: [true, 'Please enter Product Description']},
     price: {type: Number, required: [true, 'Please enter Product Description'], maxLength: [8, 'Price can not exceed 8 characters']},
-    ratings: {type: String, default: 0},
+    ratings: {type: Number, default: 0},
     productImage: [{
         public_id: {type: String, required: true},
         url: {type: String, required: true},
@@ -20,8 +20,9 @@ export const productSchema:Schema = new Schema({
     availableStock: {type: Number, required: [true, 'Please enter Product stock'], maxLength: [4, 'Stock can not exceed 4 characters'], default: 1},
     numOfReviews: {type: Number, default: 0},
     reviews: [{
+        user: { type: Types.ObjectId, ref: "User", required: true},
         name: {type: String, required: true},
-        rating: {type: String, required: true},
+        rating: {type: Number, required: true},
         comment: {type: String, required: true}
     }],
 }, {timestamps: true})

@@ -5,21 +5,26 @@ interface productImage {
     url: string
 }
 
-interface reviews {
-    name: string,
+export interface IReview {
+    user: Types.ObjectId,
+    name: string | undefined,
     rating: number,
-    comment: string
+    comment: string,
+}
+
+export interface IDeleteReview extends IReview {
+    _id?: string
 }
 
 export default interface IProduct extends Document{
     name: string,
     description: string,
     price: number,
-    rating: number,
+    ratings: number,
     productImage: Array<productImage>,
     createdBy: Types.ObjectId
     category: string,
     availableStock: number,
     numOfReviews: number,
-    reviews: Array<reviews>,
+    reviews: Array<IDeleteReview>,
 }

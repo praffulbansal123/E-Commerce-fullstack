@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction, RequestHandler} from 'express';
 import mongoose, { Types } from 'mongoose';
-import IProduct from '../interface/models/product';
+import IProduct, { IReview } from '../interface/models/product';
 import logger from '../logger/logger';
 import { IRequest } from '../middleware/auth';
-import {createProductService, getAllProductService, deleteProductService, updatePoductService} from '../services/productService'
+import {createProductService, getAllProductService, deleteProductService, updatePoductService, createProductReviewService, getAllReviewByProductIdService, deleteReviewService} from '../services/productService'
 import { IQueryStr } from '../utils/apiFeatures';
 
 
@@ -11,8 +11,6 @@ export const createProductHandler:RequestHandler = async (req: IRequest, res:Res
     try {
         
         const requestBody = req.body
-
-        console.log(req.user)
 
         const creatorId: Types.ObjectId = req.user ? req.user.id : undefined
 
@@ -72,6 +70,61 @@ export const deleteProductHandler: RequestHandler = async (req: Request, res: Re
         return res.status(200).send({status: isProductDeleted, message: 'Product deleted successfully'})
 
     } catch (error : any) {
+        logger.info(error.message);
+        next(error)
+    }
+}
+
+// Create new Review or Update a Review
+export const createProductReviewHandler: RequestHandler = async (req: IRequest, res: Response, next : NextFunction) => {
+    try {
+        const {rating, comment, productId} = req.body
+
+        const reviewData: IReview = {
+            user: req.user? req.user._id: undefined,
+            name: req.user? req.user.name: undefined,
+            rating,
+            comment
+        }
+
+        const review = await createProductReviewService(productId, reviewData)
+
+        res.status(200).send({status: true, message: 'Review added'})
+        
+    } catch (error: any) {
+        logger.info(error.message);
+        next(error)
+    }
+}
+
+export const getAllReviewByProductIdHandler: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const productId = req.query.productId as string
+
+        const reviews: IReview[] = await getAllReviewByProductIdService(productId)
+
+        res.status(200).send({status: true, reviews})
+        
+    } catch (error: any) {
+        logger.info(error.message);
+        next(error)
+    }
+}
+
+export const deleteReviewHandler: RequestHandler = async (req: IRequest, res: Response, next: NextFunction) => {
+    try {
+        const productId = req.query.productId as string
+
+        const reviewId = req.query.reviewId as string
+
+        const userRole: string|undefined = req.user? req.user.role : undefined
+
+        const userId: Types.ObjectId = req.user? req.user._id : undefined
+
+        await deleteReviewService(productId, reviewId, userRole, userId)
+
+        res.status(200).send({status: true, message: 'Review deleted'})
+    } catch (error: any) {
         logger.info(error.message);
         next(error)
     }

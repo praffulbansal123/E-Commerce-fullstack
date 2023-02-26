@@ -54,8 +54,6 @@ class ApiFeatures {
 
         const noOfProductsSkipped: number = input * (currentPage - 1)
 
-        console.log(currentPage, noOfProductsSkipped)
-
         this.query = this.query.limit(input).skip(noOfProductsSkipped)
 
         return this
