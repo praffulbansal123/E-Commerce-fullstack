@@ -2,15 +2,17 @@ import {Schema, model, Types} from "mongoose";
 import IProduct from "../interface/models/product"
 import mongooseUniqueValidator from "mongoose-unique-validator";
 
+export const productImageSchema: Schema = new Schema({
+    public_id: {type: String, required: true},
+    url: {type: String, required: true}
+}, {_id: false})
+
 export const productSchema:Schema = new Schema({
     name: {type: String, required: [true, 'Please enter Product Name'], unique: true, trim: true},
     description: {type: String, required: [true, 'Please enter Product Description']},
     price: {type: Number, required: [true, 'Please enter Product Description'], maxLength: [8, 'Price can not exceed 8 characters']},
     ratings: {type: Number, default: 0},
-    productImage: [{
-        public_id: {type: String, required: true},
-        url: {type: String, required: true},
-    }],
+    productImage: [productImageSchema],
     createdBy: {
         type: Types.ObjectId,
         ref: "User",
@@ -29,12 +31,6 @@ export const productSchema:Schema = new Schema({
 
 // unique fields validation
 productSchema.plugin(mongooseUniqueValidator, {message: 'already taken'});
-
-// productSchema.pre('findOneAndUpdate', (next) => {
-//     const product = this
-//     product.options.runValidators = true
-//     next()
-// })
 
 // Creating Product Model
 const Product = model<IProduct>('Product', productSchema);

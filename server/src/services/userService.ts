@@ -3,7 +3,6 @@ import {INewUserDetails, IUserModel} from '../interface/models/user';
 import User from '../models/userModel';
 import sendEmail from '../utils/sendEmail';
 import crypto from 'crypto'
-import { AnyNaptrRecord } from 'dns';
 
 export const registerUserService = async(input: IUserModel): Promise<IUserModel> => {
     try {

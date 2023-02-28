@@ -9,6 +9,7 @@ import MongoStore from 'connect-mongo';
 import Database from './database/db';
 import userRouter from './routes/userRoute';
 import productRouter from './routes/productRoute';
+import orderRouter from './routes/orderRoute';
 import Locals from './config/config';
 import multer from 'multer';
 import logger from './logger/logger';
@@ -61,6 +62,9 @@ app.use("/api/v1", userRouter);
 
 // diverting product request to product router
 app.use("/api/v1", productRouter);
+
+// diverting product request to order router
+app.use("/api/v1", orderRouter);
 
 // checking invalid route
 app.use((req:Request, res:Response, next:NextFunction) => {
