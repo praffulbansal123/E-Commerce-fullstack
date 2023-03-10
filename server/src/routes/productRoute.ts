@@ -10,6 +10,9 @@ router.post('/admin/product/new', isAuthenticated, isAuthorized('admin'), Produc
 // Fetched products with filter conditions
 router.get('/products', ProductController.getAllProductHandler)
 
+// Fetching ProductDetails by ID
+router.get('/product/:productId', ProductController.getProductByIdHandler)
+
 // Update product route
 router.put('/admin/product/:productId', isAuthenticated, isAuthorized('admin'), ProductController.updateProductHandler)
 

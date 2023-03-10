@@ -8,6 +8,7 @@ interface productImage {
 export interface IReview {
     user: Types.ObjectId,
     name: string | undefined,
+    userProfileImage: string | undefined,
     rating: number,
     comment: string,
 }

@@ -3,7 +3,7 @@ import mongoose, { Types } from 'mongoose';
 import IProduct, { IReview } from '../interface/models/product';
 import logger from '../logger/logger';
 import { IRequest } from '../middleware/auth';
-import {createProductService, getAllProductService, deleteProductService, updatePoductService, createProductReviewService, getAllReviewByProductIdService, deleteReviewService} from '../services/productService'
+import {createProductService, getAllProductService, getProductByIdService, deleteProductService, updatePoductService, createProductReviewService, getAllReviewByProductIdService, deleteReviewService} from '../services/productService'
 import { IQueryStr } from '../utils/apiFeatures';
 
 
@@ -37,6 +37,21 @@ export const getAllProductHandler:RequestHandler = async (req:Request, res:Respo
         const productCount: number = products.length
 
         return res.status(200).send({status: true, message: 'Product Details Fetched', totalProducts: productCount, data: products})
+
+    } catch (error:any) {
+        logger.info(error.message);
+        next(error);
+    }
+}
+
+export const getProductByIdHandler:RequestHandler = async (req:Request, res:Response, next:NextFunction) => {
+    try {
+
+        const productId:string = req.params.productId
+
+        const product:IProduct = await getProductByIdService(productId)
+
+        return res.status(200).send({status: true, message: 'Product Details Fetched', data: product})
 
     } catch (error:any) {
         logger.info(error.message);
@@ -83,6 +98,7 @@ export const createProductReviewHandler: RequestHandler = async (req: IRequest, 
         const reviewData: IReview = {
             user: req.user? req.user._id: undefined,
             name: req.user? req.user.name: undefined,
+            userProfileImage: req.user? req.user.profileImage.url: undefined,
             rating,
             comment
         }

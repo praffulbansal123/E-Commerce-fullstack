@@ -24,6 +24,7 @@ export const productSchema:Schema = new Schema({
     reviews: [{
         user: { type: Types.ObjectId, ref: "User", required: true},
         name: {type: String, required: true},
+        userProfileImage: {type: String, required: true},
         rating: {type: Number, required: true},
         comment: {type: String, required: true}
     }],

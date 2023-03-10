@@ -35,6 +35,19 @@ export const getAllProductService = async (input:IQueryStr):Promise<Array<IProdu
     }
 }
 
+export const getProductByIdService = async(productId:string):Promise<IProduct> => {
+    try {
+        const product:IProduct|null = await Product.findById(productId)
+
+        if(!product)
+            throw new createError.NotFound(`Product with ID: ${productId} does not exits`)
+
+        return product
+    } catch (error: any) {
+        throw error
+    }
+}
+
 export const updatePoductService = async (productId:string, requestBody:any): Promise<IProduct> => {
     try {
 
@@ -133,7 +146,6 @@ export const deleteReviewService = async (productId: string, reviewId: string, u
             reviews = product.reviews.filter(r => r._id!.toString() !== reviewId.toString())
         } else {
             const review = product.reviews.find(r => r._id!.toString() === reviewId.toString())
-            console.log(review, userId)
             if(review && review.user.toString() === userId.toString()){
                 reviews = product.reviews.filter(r => r._id!.toString() !== reviewId.toString())
             } else {
