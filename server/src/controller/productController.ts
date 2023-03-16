@@ -6,6 +6,12 @@ import { IRequest } from '../middleware/auth';
 import {createProductService, getAllProductService, getProductByIdService, deleteProductService, updatePoductService, createProductReviewService, getAllReviewByProductIdService, deleteReviewService} from '../services/productService'
 import { IQueryStr } from '../utils/apiFeatures';
 
+export interface IService {
+    products: IProduct[],
+    totalProducts: number,
+    filteredProductsCount: number,
+}
+
 
 export const createProductHandler:RequestHandler = async (req: IRequest, res:Response, next:NextFunction) => {
     try {
@@ -32,11 +38,12 @@ export const getAllProductHandler:RequestHandler = async (req:Request, res:Respo
 
         const requestBody:IQueryStr = req.query
 
-        const products:Array<IProduct> = await getAllProductService(requestBody)
+        const productsPerPage: number = 4
 
-        const productCount: number = products.length
+        const data:IService = await getAllProductService(requestBody, productsPerPage)
 
-        return res.status(200).send({status: true, message: 'Product Details Fetched', totalProducts: productCount, data: products})
+
+        return res.status(200).send({status: true, message: 'Product Details Fetched', totalProducts: data.totalProducts, data: data.products, productsPerPage, filteredProductsCount: data.filteredProductsCount})
 
     } catch (error:any) {
         logger.info(error.message);

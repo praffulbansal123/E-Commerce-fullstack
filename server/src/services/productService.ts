@@ -3,6 +3,7 @@ import IProduct, { IDeleteReview, IReview } from "../interface/models/product"
 import createError from 'http-errors';
 import ApiFeatures, { IQueryStr } from '../utils/apiFeatures';
 import { Types } from 'mongoose';
+import { IService } from '../controller/productController';
 
 
 export const createProductService = async (input:any, creatorId: Types.ObjectId):Promise<IProduct> => {
@@ -19,16 +20,22 @@ export const createProductService = async (input:any, creatorId: Types.ObjectId)
     }
 }
 
-export const getAllProductService = async (input:IQueryStr):Promise<Array<IProduct>> => {
+export const getAllProductService = async (input:IQueryStr, productsPerPage:number):Promise<IService> => {
     try {
 
-        const productsPerPage: number = 5
+        const totalProducts: number = await Product.countDocuments()
 
-        const apiFeatures = new ApiFeatures(Product.find(), input).serach().filter().pagination(productsPerPage)
+        const apiFeatures = new ApiFeatures(Product.find(), input).serach().filter()
 
-        const products:Array<IProduct> = await apiFeatures.query
+        let products:Array<IProduct> = await apiFeatures.query
+
+        const filteredProductsCount: number = products.length
         
-        return products
+        apiFeatures.pagination(productsPerPage)
+
+        products = await apiFeatures.query.clone()
+        
+        return {products, totalProducts, filteredProductsCount}
         
     } catch (error:any) {
         throw error
