@@ -6,11 +6,10 @@ import IProduct from "../../interface/productInterface";
 // Actions
 export const getProductDetails = createAsyncThunk('productDetails', async(productId:string|undefined, thunkApi) => {
     try {
-        console.log(productId)
         const response = await axios.get<ProductResponse>(`http://localhost:8080/api/v1/product/${productId}`)
         return response.data
     } catch (error: any) {
-        return thunkApi.rejectWithValue(error.message)
+        return thunkApi.rejectWithValue(error.response.data.message)
     }
 })
 
@@ -18,6 +17,7 @@ export const getProductDetails = createAsyncThunk('productDetails', async(produc
 interface ProductState {
     isLoading: boolean,
     error: null | string,
+    progress: number
     product: ProductResponse
 }
 
@@ -29,6 +29,7 @@ interface ProductResponse {
 
 const initialState: ProductState = {
     isLoading: true,
+    progress: 0,
     error: null,
     product: {
         status: false,
@@ -59,14 +60,17 @@ const productDetailsSlice = createSlice({
         builder
             .addCase(getProductDetails.pending, (state: ProductState) => {
                 state.isLoading = true
+                state.progress = 90
             })
             .addCase(getProductDetails.fulfilled, (state: ProductState, action: PayloadAction<ProductResponse>) => {
                 state.isLoading = false
                 state.product = action.payload
+                state.progress = 100
             })
             .addCase(getProductDetails.rejected, (state: ProductState, action: PayloadAction<any>) => {
                 state.isLoading = false
                 state.error = action.payload
+                state.progress = 100
             });
     }
 })

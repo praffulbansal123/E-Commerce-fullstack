@@ -1,14 +1,14 @@
 import { Box, Rating, Typography } from '@mui/material'
 import { shades } from '../theme'
 
-type IReview = {
+export type IReview = {
     review: {
-    user: string,
-    name: string,
-    rating: number,
-    userProfileImage: string
-    comment: string,
-    _id: string
+        user: string|undefined,
+        name: string|undefined,
+        rating: number|undefined,
+        userProfileImage: string|undefined,
+        comment: string|undefined,
+        _id: string|undefined
     }
 }
 
